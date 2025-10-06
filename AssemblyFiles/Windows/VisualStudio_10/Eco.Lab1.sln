@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual C++ Express 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Eco.Lab1", "Eco.Lab1.vcxproj", "{36718CB1-20CF-4A46-A920-E579213DD062}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Eco.Lab1UnitTest", "Eco.Lab1UnitTest.vcxproj", "{C5C7411B-A740-483B-B248-C0ACBFF51101}"

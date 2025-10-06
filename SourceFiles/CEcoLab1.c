@@ -21,7 +21,6 @@
 #include "IEcoInterfaceBus1.h"
 #include "IEcoInterfaceBus1MemExt.h"
 #include "CEcoLab1.h"
-#include <stdio.h>
 /*
  *
  * <сводка>
@@ -93,19 +92,6 @@ static uint32_t ECOCALLMETHOD CEcoLab1_AddRef(/* in */ IEcoLab1Ptr_t me) {
  *   Проверяет аргументы на NULL и возвращает код ошибки при некорректных
  *   входных данных.
  * </описание>
- *
- * <параметры>
- *   me  - указатель на экземпляр компонента (может быть использован для
- *         логирования/доступа к контексту). Не может быть NULL.
- *   a   - указатель на первый элемент для обмена. Не может быть NULL.
- *   b   - указатель на второй элемент для обмена. Не может быть NULL.
- * </параметры>
- *
- * <возврат>
- *   0  — успех
- *  -1  — ошибка указателя (ERR_ECO_POINTER)
- * </возврат>
- *
  */
 static int32_t ECOCALLMETHOD CEcoLab1_Swap(/* in */ IEcoLab1Ptr_t me, /* inout */ int32_t* a, /* inout */ int32_t* b) {
     int32_t tmp;
@@ -134,19 +120,6 @@ static int32_t ECOCALLMETHOD CEcoLab1_Swap(/* in */ IEcoLab1Ptr_t me, /* inout *
  *   Нужна при разложении дерева Леонардо на дочерние поддеревья.
  * </описание>
  *
- * <параметры>
- *   i       - индекс корня текущего дерева в массиве
- *   k       - порядковый номер дерева Леонардо (индекс в последовательности)
- *   leo_nums - массив чисел Леонардо
- *   t_r     - (out) индекс корня правого дочернего дерева
- *   k_r     - (out) порядковый номер правого дочернего дерева
- *   t_l     - (out) индекс корня левого дочернего дерева
- *   k_l     - (out) порядковый номер левого дочернего дерева
- * </параметры>
- *
- * <возврат>
- *   void
- * </возврат>
  *
  */
 void get_child_trees(int i, int k, int *leo_nums, int *t_r, int *k_r, int *t_l, int *k_l) {
@@ -169,22 +142,13 @@ void get_child_trees(int i, int k, int *leo_nums, int *t_r, int *k_r, int *t_l, 
  *   вызывающая сторона обязана вызвать free.
  * </описание>
  *
- * <параметры>
- *   hi   - верхняя граница значений (генерируем числа <= hi)
- *   size - (out) количество элементов, записанное в *size
- * </параметры>
- *
- * <возврат>
- *   указатель на выделенный массив int с числами Леонардо
- * </возврат>
- *
  */
 int* leonardo_numbers(int hi, int *size) {
     int capacity = 16;
     int *numbers = (int*)malloc(capacity * sizeof(int));
     int a = 1, b = 1;
     int count = 0;
-int next = 0;
+	int next = 0;
     while (a <= hi) {
         if (count >= capacity) {
             capacity *= 2;
@@ -211,30 +175,15 @@ int next = 0;
  *   Используется в фазах построения и разрушения леса деревьев Леонардо.
  *   Функция опирается на массив leo_nums с числами Леонардо и на стек
  *   (heap[]) с порядковыми номерами деревьев.
- *
- *   Примечание: во внутренней реализации используются сравнения с
- *   дочерними элементами и рекурсивное/итеративное просеивание вниз.
  * </описание>
  *
- * <параметры>
- *   me        - указатель на экземпляр компонента (контекст)
- *   arr       - массив сортируемых значений
- *   i         - индекс корня просеиваемого дерева в lst
- *   heap      - массив порядков (k) деревьев Леонардо, представляющий лес
- *   heap_size - текущий размер этого стека (количество деревьев)
- *   leo_nums  - массив чисел Леонардо
- * </параметры>
- *
- * <возврат>
- *   void
- * </возврат>
  *
  */
 void restore_heap(IEcoLab1Ptr_t me, int *arr, int i, int *heap, int heap_size, int *leo_nums) {
     int current = heap_size - 1;
     int k = heap[current];
-int j, t_r, k_r, t_l, k_l;
-CEcoLab1* pCMe = (CEcoLab1*)me;
+	int j, t_r, k_r, t_l, k_l;
+	CEcoLab1* pCMe = (CEcoLab1*)me;
     while (current > 0) {
         j = i - leo_nums[k];
         if (arr[j] > arr[i] && (k < 2  || (arr[j] > arr[i - 1] && arr[j] > arr[i - 2]))) {
@@ -283,33 +232,17 @@ CEcoLab1* pCMe = (CEcoLab1*)me;
  *        элемента (фаза "build").
  *     2. Разбор леса (разложение корней деревьев) с восстановлением
  *        инварианта и последовательным извлечением элементов (фаза "drain").
- *
- *   Требования:
- *     - arr должен быть массивом длины n (n > 0).
- *     - Функция использует вспомогательные структуры (массив чисел Леонардо,
- *       стек порядков деревьев), которые выделяются динамически.
- *
- *   Возвращаемые коды:
- *     0  — успех
- *    -1  — ошибка указателя / некорректные аргументы
  * </описание>
- *
- * <параметры>
- *   me  - указатель на экземпляр компонента (используется для вызова
- *         внутреннего Swap и доступа к контексту)
- *   arr - массив int32_t для сортировки (in-out)
- *   n   - количество элементов в arr
- * </параметры>
  *
  */
 static int32_t ECOCALLMETHOD CEcoLab1_SmoothSort(/* in */ IEcoLab1Ptr_t me, /* inout */ int32_t* arr, /* in */ int32_t n) {
-CEcoLab1* pCMe = (CEcoLab1*)me;
-int leo_size = 0;
+	CEcoLab1* pCMe = (CEcoLab1*)me;
+	int leo_size = 0;
     int *leo_nums = leonardo_numbers(n, &leo_size);
 
     int *heap = (int*)malloc(n * sizeof(int));
     int heap_size = 0;
-int i = 0, k = 0, t_r, k_r, t_l, k_l;
+	int i = 0, k = 0, t_r, k_r, t_l, k_l;
 
     for (i = 0; i < n; i++) {
         if (heap_size >= 2 && heap[heap_size - 2] == heap[heap_size - 1] + 1) {
@@ -390,7 +323,7 @@ static uint32_t ECOCALLMETHOD CEcoLab1_Release(/* in */ IEcoLab1Ptr_t me) {
 static int16_t ECOCALLMETHOD CEcoLab1_MyFunction(/* in */ IEcoLab1Ptr_t me, /* in */ char_t* Name, /* out */ char_t** copyName, int32_t*  arr, int32_t n) {
     CEcoLab1* pCMe = (CEcoLab1*)me;
     int16_t index = 0;
-int i = 0;
+	int i = 0;
     /* Проверка указателей */
     if (me == 0 || Name == 0 || copyName == 0) {
         return ERR_ECO_POINTER;
@@ -408,11 +341,6 @@ int i = 0;
     }
     *copyName = pCMe->m_Name;
 
-pCMe->m_pVTblIEcoLab1->SmoothSort((IEcoLab1*)pCMe, arr, n);
-
-for(i = 0; i < n; i++){
-printf("%d ", arr[i]);
-}
     return ERR_ECO_SUCCESES;
 }
 
