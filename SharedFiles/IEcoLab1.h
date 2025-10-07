@@ -42,7 +42,6 @@ typedef struct IEcoLab1VTbl {
 
     /* IEcoLab1 */
     int16_t (ECOCALLMETHOD *MyFunction)(/* in */ IEcoLab1Ptr_t me, /* in */ char_t* Name, /* out */ char_t** CopyName, int32_t* arr, int32_t n);
-	int32_t (ECOCALLMETHOD *Swap)(/* in */ IEcoLab1Ptr_t me, /* inout */ int32_t* a, /* inout */ int32_t* b);
 	int32_t (ECOCALLMETHOD *SmoothSort)(/* in */ IEcoLab1Ptr_t me, /* inout */ int32_t* arr, /* in */ int32_t n);
 
 
