@@ -393,7 +393,6 @@ IEcoLab1VTbl g_x277FC00C35624096AFCFC125B94EEC90VTbl = {
     CEcoLab1_AddRef,
     CEcoLab1_Release,
     CEcoLab1_MyFunction,
-CEcoLab1_Swap,
 CEcoLab1_SmoothSort
 };
 
